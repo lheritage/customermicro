@@ -1,0 +1,113 @@
+{
+	"schemaVersion": "4",
+	"info": {
+		"name": "customerOrderApi - get /customer"
+	},
+	"parameter": {
+		"properties": {
+			"params": {
+				"type": "object",
+				"description": "The parameters from the endpoint."
+			},
+			"request": {
+				"type": "object",
+				"description": "The HTTP request."
+			},
+			"config": {
+				"type": "object",
+				"description": "The service's configuration"
+			},
+			"env": {
+				"type": "object",
+				"description": "The host OS environment"
+			}
+		},
+		"additionalProperties": false,
+		"required": [
+			"params",
+			"request",
+			"config",
+			"env"
+		]
+	},
+	"start": "customeraccount.1",
+	"nodes": {
+		"http.1": {
+			"type": "nodehandler://axway-flow/http",
+			"name": "Set HTTP Response",
+			"method": "setresponse",
+			"parameters": [
+				{
+					"name": "status",
+					"type": "number",
+					"value": "200",
+					"metaName": "status",
+					"metaDescription": "The HTTP status code"
+				},
+				{
+					"name": "body",
+					"type": "jsonpath",
+					"value": "$.response.data",
+					"metaName": "body",
+					"metaDescription": "The response payload"
+				}
+			],
+			"outputs": {
+				"next": {
+					"context": "$.response",
+					"routes": [],
+					"metaName": "Next"
+				}
+			},
+			"metaMethod": "Set HTTP Response"
+		},
+		"customeraccount.1": {
+			"type": "nodehandler://@axway/api-builder-plugin-fn-swagger/customeraccount",
+			"name": "findCustomer",
+			"method": "findCustomer",
+			"parameters": [],
+			"outputs": {
+				"200": {
+					"routes": [
+						"http.1"
+					],
+					"context": "$.response",
+					"metaName": "200"
+				},
+				"401": {
+					"routes": [],
+					"context": "$.response",
+					"metaName": "401"
+				},
+				"404": {
+					"routes": [],
+					"context": "$.response",
+					"metaName": "404"
+				},
+				"500": {
+					"routes": [],
+					"context": "$.response",
+					"metaName": "500"
+				},
+				"504": {
+					"routes": [],
+					"context": "$.response",
+					"metaName": "504"
+				},
+				"default": {
+					"routes": [
+						"http.1"
+					],
+					"context": "$.response",
+					"metaName": "Default"
+				},
+				"error": {
+					"routes": [],
+					"context": "$.error",
+					"metaName": "Error"
+				}
+			},
+			"metaMethod": "findCustomer"
+		}
+	}
+}
